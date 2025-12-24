@@ -5,50 +5,50 @@ import re
 
 def safe_eval(expr):
     if not re.match(r'^[0-9+\-*/().\s]+$', expr):
-        raise ValueError("Ongeldige karakters in formule")
+        raise ValueError("Invalid characters detected")
     return eval(expr)
 
 def wait_for_release():
-    # Wacht tot zowel CTRL als Y NIET meer ingedrukt zijn
+    # Wait until both CTRL and Y are NO longer pressed
     while keyboard.is_pressed('ctrl') or keyboard.is_pressed('y'):
         time.sleep(0.01)
 
 def on_hotkey():
-    print("Ctrl+Y gedetecteerd… wachten tot losgelaten…")
+    print("Ctrl+Y detected.. waiting for release")
 
-    # WACHTEN TOT LOSGELATEN
+    # WAITING FOR RELEASE
     wait_for_release()
-    print("Losgelaten → nu pas Ctrl+C uitvoeren")
+    print("Released -> Ctrl+C")
 
-    # Clipboard leegmaken
+    # Clear clipboard
     pyperclip.copy("")
 
-    # Kopiëren
+    # Copy
     keyboard.press_and_release('ctrl+c')
     time.sleep(0.05)
 
     formula = pyperclip.paste().strip()
-    print(f"Geselecteerde formule: {formula}")
+    print(f"Selected formula: {formula}") 
 
     if not formula:
-        print("Niets geselecteerd")
+        print("Nothing selected")
         return
 
     try:
         result = safe_eval(formula)
     except Exception as e:
-        print(f"Fout bij berekenen: {e}")
+        print(f"Error by calculating: {e}")
         return
 
-    print(f"Resultaat: {result}")
+    print(f"Result: {result}")
 
     pyperclip.copy(str(result))
     time.sleep(0.05)
 
     keyboard.press_and_release('ctrl+v')
-    print("Resultaat geplakt.")
+    print("Result pasted.")
 
 keyboard.add_hotkey('ctrl+y', on_hotkey)
 
-print("ClipCalc‑achtige formule‑calculator actief. Druk Ctrl+Y op een formule…")
+print("ClipCalc calculator active. Press Ctrl+Y on a formula")
 keyboard.wait()
